@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>DRAKON SKY</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',system-ui,sans-serif}
+    body{background:#0a0a0f;color:#e0e0e0;min-height:100vh;display:flex;justify-content:center;align-items:center;padding:12px}
+    .app{width:100%;max-width:430px;background:#11111e;border:1px solid rgba(255,255,255,0.05);border-radius:28px;padding:20px 16px 16px;box-shadow:0 20px 60px rgba(0,0,0,0.85);min-height:650px;display:flex;flex-direction:column}
+    #login{display:block;flex:1}
+    .brand{text-align:center;margin-bottom:20px}
+    .brand h1{font-size:24px;font-weight:800;background:linear-gradient(135deg,#00f5d4,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;letter-spacing:3px}
+    .brand .sub{font-size:9px;color:rgba(255,255,255,0.2);letter-spacing:4px;text-transform:uppercase;margin-top:2px}
+    .brand .badge{display:inline-block;background:rgba(0,245,212,0.06);border:1px solid rgba(0,245,212,0.08);border-radius:30px;padding:2px 14px;font-size:8px;color:#00f5d4;letter-spacing:2px;margin-top:4px}
+    .input-group{margin-bottom:12px}
+    .input-group label{display:block;font-size:9px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+    .input-group input{width:100%;padding:13px 14px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:12px;color:#fff;font-size:14px;outline:none;transition:0.2s}
+    .input-group input:focus{border-color:rgba(0,245,212,0.2)}
+    .btn-login{width:100%;padding:15px;border:none;border-radius:12px;background:linear-gradient(135deg,#00f5d4,#7b2ffc);color:#fff;font-size:15px;font-weight:700;cursor:pointer;margin-top:4px;box-shadow:0 4px 20px rgba(0,245,212,0.1)}
+    .btn-login:hover{opacity:0.9}
+    .login-footer{display:flex;justify-content:space-between;margin-top:12px;font-size:9px;color:rgba(255,255,255,0.15)}
+    .login-footer span{cursor:pointer}
+    .login-footer span:hover{color:#00f5d4}
+    .error-msg{color:#ff6b6b;font-size:11px;text-align:center;margin-top:8px;display:none}
+    .error-msg a{color:#00f5d4;text-decoration:none;font-weight:600}
+    #dash{display:none;flex:1;flex-direction:column}
+    .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0}
+    .header-left .status-aktif{font-size:9px;color:#00f5d4;font-weight:600;border:1px solid rgba(0,245,212,0.08);padding:3px 12px;border-radius:30px;background:rgba(0,245,212,0.03)}
+    .header-left .status-aktif::before{content:"● ";color:#00f5d4}
+    .header-right .btn-logout{background:none;border:1px solid rgba(255,107,107,0.15);color:#ff6b6b;padding:3px 12px;border-radius:30px;font-size:9px;cursor:pointer;font-weight:500}
+    .header-right .btn-logout:hover{background:rgba(255,107,107,0.04)}
+    .user-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-shrink:0}
+    .user-row .avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#00f5d4,#7b2ffc);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:16px;color:#fff;flex-shrink:0}
+    .user-row .user-info h3{font-size:15px;font-weight:600}
+    .user-row .user-info .role{font-size:8px;color:#00f5d4;background:rgba(0,245,212,0.06);padding:2px 8px;border-radius:20px;display:inline-block;margin-top:2px}
+    .user-row .user-info .role.member{color:#ffd700;background:rgba(255,215,0,0.06)}
+    .account-card{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);border-radius:14px;padding:14px 14px;margin-bottom:12px;text-align:center;flex-shrink:0}
+    .account-card .label{font-size:8px;color:rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:2px;margin-bottom:4px}
+    .account-card .name{font-size:20px;font-weight:700;color:#fff;letter-spacing:1px}
+    .account-card .role-badge{display:inline-block;background:rgba(0,245,212,0.06);border:1px solid rgba(0,245,212,0.08);border-radius:30px;padding:2px 14px;font-size:9px;color:#00f5d4;margin-top:4px}
+    .account-card .role-badge.member{color:#ffd700;background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.1)}
+    .account-card .expiry{font-size:10px;color:rgba(255,255,255,0.2);margin-top:4px}
+    .account-card .expiry span{color:#fff;font-weight:600}
+    .stats-row{display:flex;justify-content:space-around;padding:10px 0;border-top:1px solid rgba(255,255,255,0.03);border-bottom:1px solid rgba(255,255,255,0.03);margin-bottom:12px;flex-shrink:0}
+    .stats-row .item{text-align:center}
+    .stats-row .item .num{font-size:18px;font-weight:700;background:linear-gradient(135deg,#00f5d4,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .stats-row .item .lbl{font-size:7px;color:rgba(255,255,255,0.15);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+    .info-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-shrink:0}
+    .info-row .berita{font-size:9px;color:rgba(255,255,255,0.15)}
+    .info-row .berita span{color:#fff;font-weight:600}
+    .pair-section{background:rgba(0,245,212,0.03);border:1px solid rgba(0,245,212,0.08);border-radius:12px;padding:14px;text-align:center;margin-bottom:12px;display:none;flex-shrink:0}
+    .pair-section .label{font-size:8px;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:2px}
+    .pair-section .code{font-size:26px;font-weight:800;color:#00f5d4;letter-spacing:4px;margin-top:4px;font-family:monospace}
+    .pair-section .note{font-size:8px;color:rgba(255,255,255,0.15);margin-top:4px}
+    .footer-menu{display:flex;justify-content:space-around;padding-top:12px;border-top:1px solid rgba(255,255,255,0.04);margin-top:4px;flex-shrink:0}
+    .footer-menu .item{text-align:center;cursor:pointer;padding:4px 8px;border-radius:8px}
+    .footer-menu .item:hover{background:rgba(255,255,255,0.02)}
+    .footer-menu .item .icon{font-size:18px;display:block}
+    .footer-menu .item .lbl{font-size:7px;color:rgba(255,255,255,0.12);text-transform:uppercase;letter-spacing:1px;margin-top:2px}
+    .footer-menu .item.active .lbl{color:#00f5d4}
+    .sub{display:none;flex:1;flex-direction:column}
+    .sub.show{display:flex}
+    .sub .back{background:none;border:1px solid rgba(255,255,255,0.04);color:rgba(255,255,255,0.3);padding:5px 14px;border-radius:30px;font-size:9px;cursor:pointer;margin-bottom:10px;align-self:flex-start;flex-shrink:0}
+    .sub .back:hover{border-color:rgba(255,255,255,0.08);color:#fff}
+    .sub .title{font-size:17px;font-weight:700;flex-shrink:0}
+    .sub .subtitle{font-size:10px;color:rgba(255,255,255,0.2);margin-bottom:10px;flex-shrink:0}
+    .sub .page-content{flex:1;overflow-y:auto;padding-bottom:8px}
+    .home-full{flex:1;display:flex;flex-direction:column;gap:10px}
+    .home-full .stats-row{border:none;padding:0 0 10px 0;margin-bottom:0}
+    .home-full .info-card{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:14px}
+    .home-full .info-card .lbl{font-size:8px;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:1px}
+    .home-full .info-card .val{font-size:13px;font-weight:600;margin-top:2px}
+    .chat-full{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:16px 0}
+    .chat-full .avatar-big{width:70px;height:70px;border-radius:50%;background:linear-gradient(135deg,#00f5d4,#7b2ffc);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:28px;color:#fff;box-shadow:0 0 30px rgba(0,245,212,0.05)}
+    .chat-full .name{font-size:22px;font-weight:700}
+    .chat-full .role-access{font-size:12px;color:#00f5d4;background:rgba(0,245,212,0.06);padding:5px 20px;border-radius:20px;border:1px solid rgba(0,245,212,0.08)}
+    .chat-full .role-access.member{color:#ffd700;background:rgba(255,215,0,0.06);border-color:rgba(255,215,0,0.1)}
+    .chat-full .status-text{font-size:10px;color:rgba(255,255,255,0.15);margin-top:4px}
+    .chat-full .status-text span{color:#00f5d4}
+    .target-input{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:12px;margin-bottom:12px;flex-shrink:0}
+    .target-input label{font-size:9px;color:rgba(255,255,255,0.25);text-transform:uppercase;letter-spacing:1px;display:block;margin-bottom:4px}
+    .target-input input{width:100%;padding:10px 12px;background:rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.04);border-radius:10px;color:#fff;font-size:13px;outline:none}
+    .target-input input:focus{border-color:rgba(0,245,212,0.15)}
+    .target-input .example{font-size:8px;color:rgba(255,255,255,0.12);margin-top:4px}
+    .bug-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;flex-shrink:0}
+    .bug-card{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer}
+    .bug-card:hover{background:rgba(255,255,255,0.025)}
+    .bug-card .icon{font-size:24px;display:block;margin-bottom:2px}
+    .bug-card .name{font-size:11px;font-weight:500}
+    .bug-card .desc{font-size:8px;color:rgba(255,255,255,0.2);margin-top:2px}
+    .bug-card.active{border-color:#00f5d4;background:rgba(0,245,212,0.04)}
+    .bug-card.active .name{color:#00f5d4}
+    .bug-card .check{display:none;font-size:12px;color:#00f5d4;margin-left:4px}
+    .bug-card.active .check{display:inline}
+    .btn-action{width:100%;padding:13px;border:none;border-radius:12px;color:#fff;font-weight:700;font-size:13px;cursor:pointer;letter-spacing:1px;flex-shrink:0}
+    .btn-action:hover{opacity:0.9}
+    .btn-action.attack{background:linear-gradient(135deg,#ff6b6b,#ee0979);box-shadow:0 4px 20px rgba(255,107,107,0.15)}
+    .btn-action.masuk{background:linear-gradient(135deg,#00f5d4,#00c4a8);box-shadow:0 4px 20px rgba(0,245,212,0.15)}
+    .success-msg{background:rgba(0,245,212,0.05);border:1px solid rgba(0,245,212,0.15);border-radius:12px;padding:14px;text-align:center;margin-top:12px;display:none;flex-shrink:0}
+    .success-msg .icon{font-size:28px;display:block}
+    .success-msg .text{font-size:13px;font-weight:600;color:#00f5d4;margin-top:4px}
+    .success-msg .target{font-size:11px;color:rgba(255,255,255,0.3);margin-top:2px}
+    .info-card{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:12px;margin-bottom:6px}
+    .info-card .lbl{font-size:8px;color:rgba(255,255,255,0.2);text-transform:uppercase;letter-spacing:1px}
+    .info-card .val{font-size:13px;font-weight:600;margin-top:2px}
+    .rules{list-style:none;padding:0}
+    .rules li{padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.02);font-size:11px;display:flex;gap:6px}
+    .rules li:last-child{border-bottom:none}
+    .rules li .n{color:#00f5d4;font-weight:600}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    .card{background:rgba(255,255,255,0.015);border:1px solid rgba(255,255,255,0.04);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer}
+    .card:hover{background:rgba(255,255,255,0.025)}
+    .card .icon{font-size:24px;display:block}
+    .card .name{font-size:10px;font-weight:500;margin-top:4px}
+    .card .desc{font-size:7px;color:rgba(255,255,255,0.15);margin-top:2px}
+    .toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,0.92);backdrop-filter:blur(12px);padding:10px 24px;border-radius:40px;font-size:12px;border:1px solid rgba(0,245,212,0.04);color:#00f5d4;display:none;z-index:999;white-space:nowrap;max-width:90%;box-shadow:0 10px 40px rgba(0,0,0,0.6)}
+    @media(max-width:400px){.app{padding:14px 10px 12px;min-height:580px}.brand h1{font-size:20px}.account-card .name{font-size:17px}.chat-full .avatar-big{width:60px;height:60px;font-size:24px}.chat-full .name{font-size:18px}.header-left .status-aktif{font-size:7px;padding:2px 8px}.header-right .btn-logout{font-size:7px;padding:2px 8px}.bug-grid,.grid2{gap:6px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div id="login">
+      <div class="brand">
+        <h1>ᎠᎡᎪᏀϴΝՏ ՏᏦᎽ</h1>
+        <div class="sub">Advanced Security Panel</div>
+        <div class="badge">✦ BUILD 2.0 ✦</div>
+      </div>
+      <div class="input-group">
+        <label>USERNAME</label>
+        <input type="text" id="userInput" placeholder="Masukkan username">
+      </div>
+      <div class="input-group">
+        <label>PASSWORD</label>
+        <input type="password" id="passInput" placeholder="Masukkan password">
+      </div>
+      <button class="btn-login" onclick="login()">→ SIGN IN</button>
+      <div id="err" class="error-msg">❌ Username atau password salah!<br><a href="https://t.me/kykedua" target="_blank">⚠️ SALAH BEGO SANA BUY AKSES KE @kykedua</a></div>
+      <div class="login-footer">
+        <span onclick="toast('🔐 Secure connection established')">🔒 Secure</span>
+        <span onclick="toast('⚡ Fast & reliable')">⚡ Fast</span>
+        <span onclick="toast('🛡️ Trusted platform')">🛡️ Trusted</span>
+      </div>
+    </div>
+    <div id="dash">
+      <div class="header">
+        <div class="header-left"><span class="status-aktif">AKTIF</span></div>
+        <div class="header-right"><button class="btn-logout" onclick="logout()">• LOG OUT</button></div>
+      </div>
+      <div class="user-row">
+        <div class="avatar" id="avatarLetter">D</div>
+        <div class="user-info">
+          <h3 id="dashUser">kykedua</h3>
+          <span class="role" id="dashRole">✦ DEVELOPER</span>
+        </div>
+      </div>
+      <div class="account-card">
+        <div class="label">ACCOUNT MANAGER</div>
+        <div class="name" id="accName">ZSNZ</div>
+        <div class="role-badge" id="accRole">✦ DEVELOPER</div>
+        <div class="expiry">TANGGAL HAB. <span>2299-09-07</span></div>
+      </div>
+      <div class="stats-row">
+        <div class="item"><div class="num">121</div><div class="lbl">Total Users</div></div>
+        <div class="item"><div class="num">0</div><div class="lbl">Active Connections</div></div>
+        <div class="item"><div class="num">2299</div><div class="lbl">Masa Aktif</div></div>
+      </div>
+      <div class="info-row"><div class="berita">BERITA <span>2 Artikel</span></div></div>
+      <div id="pairSection" class="pair-section">
+        <div class="label">📌 PAIR CODE</div>
+        <div class="code">DRAGONS2</div>
+        <div class="note">Gunakan kode ini untuk pairing WhatsApp</div>
+      </div>
+      <div id="page-home" class="sub show">
+        <button class="back" onclick="hideAll()">← BACK</button>
+        <div class="title">🏠 HOME</div>
+        <div class="subtitle">Dashboard utama — status & aktivitas</div>
+        <div class="page-content">
+          <div class="home-full">
+            <div class="stats-row">
+              <div class="item"><div class="num">12</div><div class="lbl">Online</div></div>
+              <div class="item"><div class="num">3</div><div class="lbl">Alert</div></div>
+              <div class="item"><div class="num">190ms</div><div class="lbl">Ping</div></div>
+            </div>
+            <div class="info-card"><div class="lbl">Server Status</div><div class="val" style="color:#00f5d4;">● ONLINE</div></div>
+            <div class="info-card"><div class="lbl">Protected by</div><div class="val" style="background:linear-gradient(135deg,#00f5d4,#7b2ffc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">ᎠᎡᎪᏀϴΝՏ ՏᏦᎽ Security</div></div>
+            <div class="info-card"><div class="lbl">Last Activity</div><div class="val" style="color:rgba(255,255,255,0.4);font-size:11px;">Today, 10:32 PM</div></div>
+            <div class="info-card"><div class="lbl">Device</div><div class="val" style="color:rgba(255,255,255,0.4);font-size:11px;">Chrome • Android</div></div>
+          </div>
+        </div>
+      </div>
+      <div id="page-chat" class="sub">
+        <button class="back" onclick="hideAll()">← BACK</button>
+        <div class="title">💬 CHAT</div>
+        <div class="subtitle">Profil & akses</div>
+        <div class="page-content" style="display:flex;align-items:center;justify-content:center;min-height:260px;">
+          <div class="chat-full">
+            <div class="avatar-big" id="chatAvatar">K</div>
+            <div class="name" id="chatName">@kykedua</div>
+            <div class="role-access" id="chatRole">✦ ROLE AKSES: DEVELOPER</div>
+            <div class="status-text">Status: <span>Online</span> • Aktif sejak 2024</div>
+            <div class="status-text" style="font-size:9px;color:rgba(255,255,255,0.08);">Terakhir login: hari ini</div>
+          </div>
+        </div>
+      </div>
+      <div id="page-bug" class="sub">
+        <button class="back" onclick="hideAll()">← BACK</button>
+        <div class="title">🐛 BUG</div>
+        <div class="subtitle">Pilih exploit / bug yang tersedia</div>
+        <div class="page-content">
+          <div class="target-input">
+            <label>📱 NOMOR TARGET</label>
+            <input type="text" id="targetNumber" placeholder="628xxxxxxxxx">
+            <div class="example">Contoh: 628123456789 (62 + nomor)</div>
+          </div>
+          <div class="bug-grid">
+            <div class="bug-card" data-bug="FC CLICK" onclick="selectBug(this)"><span class="icon">👆</span><div class="name">FC CLICK <span class="check">✅</span></div><div class="desc">ID: blankforce</div></div>
+            <div class="bug-card" data-bug="DELAY" onclick="selectBug(this)"><span class="icon">⏳</span><div class="name">DELAY <span class="check">✅</span></div><div class="desc">ID: buldo</div></div>
+            <div class="bug-card" data-bug="COMBO" onclick="selectBug(this)"><span class="icon">💥</span><div class="name">COMBO <span class="check">✅</span></div><div class="desc">ID: crashno</div></div>
+            <div class="bug-card" data-bug="WHATSAPP SENDER" onclick="selectBug(this)"><span class="icon">📲</span><div class="name">WHATSAPP SENDER <span class="check">✅</span></div><div class="desc">Kirim pesan massal</div></div>
+          </div>
+          <button class="btn-action attack" id="actionBtn" onclick="executeAction()">⚔️ ATTACK</button>
+          <div id="successMsg" class="success-msg"><span class="icon">✅</span><div class="text">SUCCESS!</div><div class="target" id="successTarget">Target: 628xxxxxxxxx</div></div>
+        </div>
+      </div>
+      <div id="page-info" class="sub">
+        <button class="back" onclick="hideAll()">← BACK</button>
+        <div class="title">ℹ️ INFO</div>
+        <div class="subtitle">Informasi akun & aturan</div>
+        <div class="page-content">
+          <div class="info-card"><div class="lbl">ACCOUNT</div><div class="val" id="infoAccount">@kykedua</div></div>
+          <div class="info-card"><div class="lbl">ROLE</div><div class="val" id="infoRole" style="color:#00f5d4;">DEVELOPER</div></div>
+          <div class="info-card"><div class="lbl">Tanggal Habis</div><div class="val">2299-09-07</div></div>
+          <div style="margin-top:10px;font-weight:600;font-size:13px;">📜 RULES</div>
+          <ul class="rules" style="margin-top:4px;">
+            <li><span class="n">1.</span> Larangan Barter Akun</li>
+            <li><span class="n">2.</span> Larangan Membagikan Akun</li>
+            <li><span class="n">3.</span> Larangan Menjual Akun</li>
+            <li><span class="n">4.</span> Tidak Ada Refund</li>
+            <li><span class="n">5.</span> Gunakan Dengan Bijak</li>
+            <li><span class="n">6.</span> Patuh Pada Developer</li>
+          </ul>
+        </div>
+      </div>
+      <div id="page-rat" class="sub">
+        <button class="back" onclick="hideAll()">← BACK</button>
+        <div class="title">🖥️ RAT</div>
+        <div class="subtitle">Remote Access Tools</div>
+        <div class="page-content">
+          <div class="grid2">
+            <div class="card" onclick="toast('🖥️ SCREEN CAPTURE diaktifkan')"><span class="icon">📸</span><div class="name">SCREEN CAPTURE</div></div>
+            <div class="card" onclick="toast('🖥️ KEYLOGGER diaktifkan')"><span class="icon">⌨️</span><div class="name">KEYLOGGER</div></div>
+            <div class="card" onclick="toast('🖥️ FILE MANAGER dibuka')"><span class="icon">📁</span><div class="name">FILE MANAGER</div></div>
+            <div class="card" onclick="toast('🖥️ CAMERA ACCESS diaktifkan')"><span class="icon">📷</span><div class="name">CAMERA</div></div>
+            <div class="card" onclick="toast('🖥️ MICROPHONE diaktifkan')"><span class="icon">🎤</span><div class="name">MICROPHONE</div></div>
+            <div class="card" onclick="toast('🖥️ LOCATION TRACKER diaktifkan')"><span class="icon">📍</span><div class="name">LOCATION</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer-menu">
+        <div class="item active" onclick="showPage('home')"><span class="icon">🏠</span><span class="lbl">HOME</span></div>
+        <div class="item" onclick="showPage('chat')"><span class="icon">💬</span><span class="lbl">CHAT</span></div>
+        <div class="item" onclick="showPage('bug')"><span class="icon">🐛</span><span class="lbl">BUG</span></div>
+        <div class="item" onclick="showPage('info')"><span class="icon">ℹ️</span><span class="lbl">INFO</span></div>
+        <div class="item" onclick="showPage('rat')"><span class="icon">🖥️</span><span class="lbl">RAT</span></div>
+      </div>
+    </div>
+  </div>
+  <div id="toast" class="toast">📡</div>
+  <script>
+    const USERS={"kykedua":{password:"123",role:"DEVELOPER"},"fadil":{password:"iky",role:"MEMBER"}};
+    let currentUser=null,currentRole=null;
+    function login(){const u=document.getElementById('userInput').value.trim().toLowerCase(),p=document.getElementById('passInput').value.trim(),err=document.getElementById('err');if(USERS[u]&&USERS[u].password===p){currentUser=u;currentRole=USERS[u].role;err.style.display='none';document.getElementById('login').style.display='none';document.getElementById('dash').style.display='flex';const isDev=currentRole==='DEVELOPER';document.getElementById('dashUser').textContent=u;const r=document.getElementById('dashRole');r.textContent='✦ '+currentRole;r.className='role'+(isDev?'':' member');document.getElementById('avatarLetter').textContent=u.charAt(0).toUpperCase();document.getElementById('accName').textContent=u.toUpperCase();const ar=document.getElementById('accRole');ar.textContent='✦ '+currentRole;ar.className='role-badge'+(isDev?'':' member');document.getElementById('chatAvatar').textContent=u.charAt(0).toUpperCase();document.getElementById('chatName').textContent='@'+u;const cr=document.getElementById('chatRole');cr.textContent='✦ ROLE AKSES: '+currentRole.toUpperCase();cr.className='role-access'+(isDev?'':' member');document.getElementById('infoAccount').textContent='@'+u;const ir=document.getElementById('infoRole');ir.textContent=currentRole;ir.style.color=isDev?'#00f5d4':'#ffd700';toast('✅ Login berhasil! Selamat datang '+u+' ('+currentRole+').');}else{err.style.display='block';document.getElementById('passInput').value='';document.getElementById('passInput').placeholder='Coba lagi...';}}
+    document.addEventListener('keydown',function(e){if(e.key==='Enter'&&document.getElementById('login').style.display!=='none')login();});
+    function logout(){document.getElementById('dash').style.display='none';document.getElementById('login').style.display='block';document.getElementById('userInput').value='';document.getElementById('passInput').value='';document.getElementById('passInput').placeholder='Masukkan password';hideAll();toast('🔴 Logout berhasil!');}
+    const pages=['page-home','page-chat','page-bug','page-info','page-rat'];
+    function hideAll(){pages.forEach(id=>{const el=document.getElementById(id);if(el)el.classList.remove('show');});document.querySelectorAll('.footer-menu .item').forEach(el=>el.classList.remove('active'));document.getElementById('successMsg').style.display='none';document.getElementById('pairSection').style.display='none';}
+    function showPage(id){hideAll();const el=document.getElementById('page-'+id);if(el)el.classList.add('show');const map={home:'HOME',chat:'CHAT',bug:'BUG',info:'INFO',rat:'RAT'};const label=map[id];document.querySelectorAll('.footer-menu .item').forEach(el=>{if(el.querySelector('.lbl').textContent.trim()===label)el.classList.add('active');});toast('📂 '+label+' dibuka');}
+    let selectedBug=null;
+    function selectBug(el){document.querySelectorAll('.bug-card').forEach(c=>c.classList.remove('active'));el.classList.add('active');selectedBug=el.getAttribute('data-bug');const btn=document.getElementById('actionBtn'),pair=document.getElementById('pairSection');pair.style.display='none';document.getElementById('successMsg').style.display='none';if(selectedBug==='WHATSAPP SENDER'){btn.textContent='🔑 MASUK';btn.className='btn-action masuk';}else{btn.textContent='⚔️ ATTACK';btn.className='btn-action attack';}toast('✅ '+selectedBug+' dipilih!');}
+    function executeAction(){const target=document.getElementById('targetNumber').value.trim(),successDiv=document.getElementById('successMsg'),targetSpan=document.getElementById('successTarget'),pair=document.getElementById('pairSection');if(!target){toast('❌ Masukkan nomor target dulu!');return;}if(!selectedBug){toast('❌ Pilih bug dulu!');return;}if(selectedBug==='WHATSAPP SENDER'){pair.style.display='block';successDiv.style.display='none';toast('📌 PAIR CODE: DRAGONS2');return;}successDiv.style.display='block';targetSpan.textContent='Target: '+target;document.getElementById('targetNumber').value='';document.querySelectorAll('.bug-card').forEach(c=>c.classList.remove('active'));selectedBug=null;document.getElementById('actionBtn').textContent='⚔️ ATTACK';document.getElementById('actionBtn').className='btn-action attack';pair.style.display='none';toast('✅ SUCCESS ATTACK! Target: '+target);}
+    let toastTimer;function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.style.display='none',2800);}
+    document.getElementById('userInput').value='';document.getElementById('passInput').value='';
+  </script>
+</body>
+</html>
